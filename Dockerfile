@@ -1,8 +1,8 @@
 FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
-    git zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    git zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev libpq-dev \
+    && docker-php-ext-install pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 
 COPY . /var/www/html
 WORKDIR /var/www/html
