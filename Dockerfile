@@ -10,7 +10,7 @@ WORKDIR /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --optimize-autoloader
-RUN npm install && npm run build
+RUN npm ci && npm run build
 
 EXPOSE 10000
 
