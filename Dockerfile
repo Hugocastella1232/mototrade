@@ -1,7 +1,7 @@
 FROM php:8.2-apache AS base
 
 RUN apt-get update && apt-get install -y \
-    git zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev libpq-dev curl \
+    git zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev libpq-dev curl gnupg \
     && docker-php-ext-install pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 
 RUN a2enmod rewrite
@@ -16,8 +16,9 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
-    npm install && \
-    npm run build
+    npm ci && \
+    npm run build || (echo "Vite build failed" && exit 1) && \
+    ls -la public/build
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
