@@ -20,4 +20,4 @@ RUN php artisan storage:link || true && \
     php artisan route:cache && \
     php artisan view:cache
 EXPOSE 10000
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+CMD ["apache2-foreground"]
