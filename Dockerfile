@@ -16,17 +16,17 @@ COPY --from=frontend /app/public/build ./public/build
 
 ENV APACHE_LISTEN_PORT=10000
 RUN sed -ri "s/Listen 80/Listen ${APACHE_LISTEN_PORT}/g" /etc/apache2/ports.conf
-RUN bash -lc 'cat >/etc/apache2/sites-available/000-default.conf <<EOF
-<VirtualHost *:${APACHE_LISTEN_PORT}>
-    DocumentRoot /var/www/html/public
-    <Directory /var/www/html/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EOF'
+
+RUN echo "<VirtualHost *:${APACHE_LISTEN_PORT}>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog \${APACHE_LOG_DIR}/error.log\n\
+    CustomLog \${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>" > /etc/apache2/sites-available/000-default.conf
+
 EXPOSE 10000
 
 RUN composer install --no-dev --optimize-autoloader
