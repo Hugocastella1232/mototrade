@@ -13,7 +13,6 @@ WORKDIR /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
-COPY .env /var/www/html/.env
 
 ENV APACHE_LISTEN_PORT=10000
 RUN sed -ri "s/Listen 80/Listen ${APACHE_LISTEN_PORT}/g" /etc/apache2/ports.conf
