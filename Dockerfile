@@ -16,7 +16,6 @@ COPY --from=frontend /app/public/build ./public/build
 
 ENV APACHE_LISTEN_PORT=10000
 RUN sed -ri "s/Listen 80/Listen ${APACHE_LISTEN_PORT}/g" /etc/apache2/ports.conf
-
 RUN echo "<VirtualHost *:${APACHE_LISTEN_PORT}>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -31,6 +30,6 @@ EXPOSE 10000
 
 RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data storage bootstrap/cache
-RUN php artisan storage:link || true && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache
+RUN php artisan storage:link || true && php artisan config:clear && php artisan route:cache && php artisan view:cache
 
 CMD ["apache2-foreground"]
