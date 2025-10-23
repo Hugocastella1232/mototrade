@@ -31,6 +31,6 @@ EXPOSE 10000
 
 RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data storage bootstrap/cache
-RUN php artisan storage:link || true && php artisan config:cache && php artisan route:cache && php artisan view:cache
+RUN php artisan storage:link || true && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache
 
 CMD ["apache2-foreground"]
