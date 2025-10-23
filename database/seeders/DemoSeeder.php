@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace Database\Seeders;
 
@@ -12,6 +12,7 @@ class DemoSeeder extends Seeder
             'name' => 'Admin Hugo',
             'email' => 'hugo.admin@example.com',
             'password' => bcrypt('admin12345'),
+            'is_admin' => true,
         ]);
 
         $s1 = \App\Models\User::factory()->create([

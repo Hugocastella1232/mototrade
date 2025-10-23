@@ -11,7 +11,7 @@ class PageController extends Controller
 {
     public function home()
     {
-        $motos = Listing::where('status', \App\Models\Listing::STATUS_APPROVED)
+        $motos = Listing::where('status', 'published')
             ->latest('published_at')
             ->get();
 
@@ -20,7 +20,7 @@ class PageController extends Controller
 
     public function catalogo(Request $request)
     {
-        $query = Listing::where('status', \App\Models\Listing::STATUS_APPROVED);
+        $query = Listing::where('status', 'published');
 
         if ($request->brand) {
             $query->where('brand', 'like', "%{$request->brand}%");
@@ -176,21 +176,21 @@ class PageController extends Controller
 
     public function adminListings()
     {
-        $motos = Listing::where('status', \App\Models\Listing::STATUS_PENDING)->get();
+        $motos = Listing::where('status', 'pending')->get();
         return view('admin.listings', compact('motos'));
     }
 
     public function approveListing($id)
     {
         $moto = Listing::findOrFail($id);
-        $moto->update(['status' => \App\Models\Listing::STATUS_APPROVED, 'published_at' => now()]);
+        $moto->update(['status' => 'published', 'published_at' => now()]);
         return back()->with('success', 'Moto aprobada.');
     }
 
     public function rejectListing($id)
     {
         $moto = Listing::findOrFail($id);
-        $moto->update(['status' => \App\Models\Listing::STATUS_REJECTED]);
+        $moto->update(['status' => 'rejected']);
         return back()->with('success', 'Moto rechazada.');
     }
 
