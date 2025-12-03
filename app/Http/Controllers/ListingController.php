@@ -38,6 +38,7 @@ class ListingController extends Controller
         $base = Str::slug($request->title);
         $slug = $base;
         $i = 1;
+
         while (Listing::where('slug', $slug)->exists()) {
             $slug = $base . '-' . $i++;
         }
@@ -55,7 +56,7 @@ class ListingController extends Controller
             'fuel' => $request->fuel,
             'listing_condition' => $request->listing_condition,
             'price_eur' => $request->price_eur,
-            'status' => 0,
+            'status' => Listing::STATUS_PENDING,
             'location' => $request->location,
             'description' => $request->description,
             'image' => $path,
