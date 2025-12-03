@@ -9,13 +9,12 @@ class Listing extends Model
 {
     use HasFactory;
 
-    const STATUS_PENDING  = 0;
-    const STATUS_APPROVED = 1;
-    const STATUS_REJECTED = 2;
+    const STATUS_PENDING  = 'pendiente';
+    const STATUS_APPROVED = 'aprobada';
+    const STATUS_REJECTED = 'rechazada';
     const UPDATED_AT = null;
 
     protected $casts = [
-        'status' => 'integer',
         'published_at' => 'datetime'
     ];
 

@@ -11,7 +11,7 @@ class PageController extends Controller
 {
     public function home()
     {
-        $motos = Listing::where('status', 'published')
+        $motos = Listing::where('status', Listing::STATUS_APPROVED)
             ->latest('published_at')
             ->get();
 
@@ -20,7 +20,7 @@ class PageController extends Controller
 
     public function catalogo(Request $request)
     {
-        $query = Listing::where('status', 'published');
+        $query = Listing::where('status', Listing::STATUS_APPROVED);
 
         if ($request->brand) {
             $query->where('brand', 'like', "%{$request->brand}%");
@@ -47,7 +47,10 @@ class PageController extends Controller
 
     public function ficha($slug)
     {
-        $moto = Listing::where('slug', $slug)->firstOrFail();
+        $moto = Listing::where('slug', $slug)
+            ->where('status', Listing::STATUS_APPROVED)
+            ->firstOrFail();
+
         return view('moto', compact('moto'));
     }
 
