@@ -29,7 +29,7 @@ class ListingFactory extends Factory
             'fuel' => 'gasolina',
             'listing_condition' => fake()->randomElement(['usada', 'seminueva', 'nueva']),
             'price_eur' => fake()->numberBetween(1000, 20000),
-            'status' => 0,
+            'status' => Listing::STATUS_PENDING,
             'location' => fake()->city(),
             'description' => fake()->paragraph(),
             'image' => null,
