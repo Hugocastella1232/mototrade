@@ -12,10 +12,13 @@ class Listing extends Model
     const STATUS_PENDING  = 'pendiente';
     const STATUS_APPROVED = 'aprobada';
     const STATUS_REJECTED = 'rechazada';
+    const STATUS_SOLD     = 'vendida';
+
     const UPDATED_AT = null;
 
     protected $casts = [
-        'published_at' => 'datetime'
+        'published_at' => 'datetime',
+        'status' => 'string'
     ];
 
     protected $fillable = [

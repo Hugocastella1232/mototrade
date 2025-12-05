@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Order;
+use App\Models\Listing;
 use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
@@ -40,16 +40,24 @@ class StripeWebhookController extends Controller
                 $totalEur = isset($session->amount_total) ? intval($session->amount_total / 100) : null;
 
                 if ($paymentIntentId && $totalEur !== null) {
-                    Order::firstOrCreate(
+                    $order = Order::firstOrCreate(
                         ['payment_intent_id' => $paymentIntentId],
                         [
-                            'user_id'          => $userId ?: null,
-                            'listing_id'       => $listingId ?: null,
-                            'status'           => 'paid',
-                            'total_eur'        => $totalEur,
+                            'user_id' => $userId ?: null,
+                            'listing_id' => $listingId ?: null,
+                            'status' => 'paid',
+                            'total_eur' => $totalEur,
                             'payment_provider' => 'stripe',
                         ]
                     );
+
+                    if ($listingId) {
+                        $listing = Listing::find($listingId);
+                        if ($listing && $listing->status !== Listing::STATUS_SOLD) {
+                            $listing->status = Listing::STATUS_SOLD;
+                            $listing->save();
+                        }
+                    }
                 }
             }
         }
