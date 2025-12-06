@@ -75,6 +75,10 @@ class PageController extends Controller
 
     public function addCarrito(Request $request, $id)
     {
+        if (!auth()->check()) {
+            return redirect()->back()->with('error', 'Debes iniciar sesión para añadir una moto al carrito.');
+        }
+
         $moto = Listing::findOrFail($id);
         $carrito = session()->get('carrito', []);
 
