@@ -35,28 +35,27 @@ class StripeWebhookController extends Controller
 
             if ($session->payment_status === 'paid') {
                 $paymentIntentId = $session->payment_intent ?? null;
-                $userId = $session->metadata->user_id ?? null;
-                $listingId = $session->metadata->listing_id ?? null;
-                $totalEur = isset($session->amount_total) ? intval($session->amount_total / 100) : null;
+                $userId          = $session->metadata->user_id ?? null;
+                $listingId       = $session->metadata->listing_id ?? null;
+                $totalEur        = isset($session->amount_total)
+                                    ? intval($session->amount_total / 100)
+                                    : null;
 
                 if ($paymentIntentId && $totalEur !== null) {
-                    $order = Order::firstOrCreate(
+                    Order::firstOrCreate(
                         ['payment_intent_id' => $paymentIntentId],
                         [
-                            'user_id' => $userId ?: null,
-                            'listing_id' => $listingId ?: null,
-                            'status' => 'paid',
-                            'total_eur' => $totalEur,
+                            'user_id'          => $userId ?: null,
+                            'listing_id'       => $listingId ?: null,
+                            'status'           => 'paid',
+                            'total_eur'        => $totalEur,
                             'payment_provider' => 'stripe',
                         ]
                     );
 
                     if ($listingId) {
-                        $listing = Listing::find($listingId);
-                        if ($listing && $listing->status !== Listing::STATUS_SOLD) {
-                            $listing->status = Listing::STATUS_SOLD;
-                            $listing->save();
-                        }
+                        Listing::where('id', $listingId)
+                            ->update(['status' => Listing::STATUS_SOLD]);
                     }
                 }
             }
