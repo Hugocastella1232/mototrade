@@ -10,18 +10,24 @@ class PaymentController extends Controller
 {
     public function createCheckoutSession(Request $request)
     {
-        $carrito = session()->get('carrito', []);
+        $carrito = session('carrito');
 
-        if (empty($carrito)) {
-            return redirect()->route('carrito')->with('error', 'El carrito está vacío.');
+        if (!$carrito || count($carrito) !== 1) {
+            abort(400, 'El carrito debe tener exactamente una moto');
         }
 
-        $item = reset($carrito);
+        $item = array_values($carrito)[0];
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
 
         $session = Session::create([
             'mode' => 'payment',
+            'payment_intent_data' => [
+                'metadata' => [
+                    'listing_id' => $item['id'],
+                    'user_id' => auth()->id(),
+                ],
+            ],
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'eur',
@@ -30,12 +36,8 @@ class PaymentController extends Controller
                     ],
                     'unit_amount' => $item['price_eur'] * 100,
                 ],
-                'quantity' => $item['quantity'],
+                'quantity' => 1,
             ]],
-            'metadata' => [
-                'listing_id' => $item['id'],
-                'user_id' => auth()->id(),
-            ],
             'success_url' => route('payment.success'),
             'cancel_url' => route('payment.cancel'),
         ]);
