@@ -16,47 +16,36 @@ class StripeWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
-        if (!$endpointSecret) {
-            return response()->json(['error' => 'Webhook secret missing'], 500);
-        }
-
-        try {
-            $event = Webhook::constructEvent(
-                $payload,
-                $sigHeader,
-                $endpointSecret
-            );
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Invalid payload or signature'], 400);
-        }
+        $event = Webhook::constructEvent(
+            $payload,
+            $sigHeader,
+            $endpointSecret
+        );
 
         if ($event->type === 'checkout.session.completed') {
             $session = $event->data->object;
 
             if ($session->payment_status === 'paid') {
-                $paymentIntentId = $session->payment_intent ?? null;
-                $userId          = $session->metadata->user_id ?? null;
-                $listingId       = $session->metadata->listing_id ?? null;
-                $totalEur        = isset($session->amount_total)
-                                    ? intval($session->amount_total / 100)
-                                    : null;
+                $listingId = $session->metadata->listing_id ?? null;
+                $userId    = $session->metadata->user_id ?? null;
+                $totalEur  = $session->amount_total
+                    ? intval($session->amount_total / 100)
+                    : null;
 
-                if ($paymentIntentId && $totalEur !== null) {
-                    Order::firstOrCreate(
-                        ['payment_intent_id' => $paymentIntentId],
-                        [
-                            'user_id'          => $userId ?: null,
-                            'listing_id'       => $listingId ?: null,
-                            'status'           => 'paid',
-                            'total_eur'        => $totalEur,
-                            'payment_provider' => 'stripe',
-                        ]
-                    );
+                Order::firstOrCreate(
+                    ['payment_intent_id' => $session->id],
+                    [
+                        'user_id'          => $userId,
+                        'listing_id'       => $listingId,
+                        'status'           => 'paid',
+                        'total_eur'        => $totalEur,
+                        'payment_provider' => 'stripe',
+                    ]
+                );
 
-                    if ($listingId) {
-                        Listing::where('id', $listingId)
-                            ->update(['status' => Listing::STATUS_SOLD]);
-                    }
+                if ($listingId) {
+                    Listing::where('id', $listingId)
+                        ->update(['status' => Listing::STATUS_SOLD]);
                 }
             }
         }
