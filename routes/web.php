@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Middleware\VerifyCsrfToken;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/catalogo', [PageController::class, 'catalogo'])->name('catalogo');
@@ -25,7 +26,8 @@ Route::post('/create-checkout-session', [PaymentController::class, 'createChecko
 Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->withoutMiddleware([VerifyCsrfToken::class]);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/listings/create', [ListingController::class, 'create'])->name('listings.create');
