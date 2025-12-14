@@ -6,7 +6,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\StripeWebhookController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/catalogo', [PageController::class, 'catalogo'])->name('catalogo');
@@ -24,8 +23,6 @@ Route::post('/checkout', [PageController::class, 'checkoutProcess'])->name('chec
 Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession'])->name('checkout.session');
 Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
-
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/listings/create', [ListingController::class, 'create'])->name('listings.create');
