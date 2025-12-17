@@ -22,12 +22,21 @@ class AdminController extends Controller
     public function editMoto($id)
     {
         $moto = Listing::findOrFail($id);
+
+        if ($moto->status === Listing::STATUS_SOLD) {
+            abort(403);
+        }
+
         return view('admin.edit_moto', compact('moto'));
     }
 
     public function updateMoto(Request $request, $id)
     {
         $moto = Listing::findOrFail($id);
+
+        if ($moto->status === Listing::STATUS_SOLD) {
+            abort(403);
+        }
 
         $request->validate([
             'brand' => 'required|string|max:100',
@@ -42,23 +51,21 @@ class AdminController extends Controller
             'description' => 'nullable|string|max:2000',
         ]);
 
-        if ($moto->status !== Listing::STATUS_SOLD) {
-            $moto->update([
-                'brand' => $request->brand,
-                'model' => $request->model,
-                'year' => $request->year,
-                'km' => $request->km,
-                'power_hp' => $request->power_hp,
-                'displacement_cc' => $request->displacement_cc,
-                'fuel' => $request->fuel,
-                'listing_condition' => $request->listing_condition,
-                'price_eur' => $request->price_eur,
-                'description' => $request->description,
-                'title' => $request->title ?? "{$request->brand} {$request->model} {$request->year}",
-            ]);
-        }
+        $moto->update([
+            'brand' => $request->brand,
+            'model' => $request->model,
+            'year' => $request->year,
+            'km' => $request->km,
+            'power_hp' => $request->power_hp,
+            'displacement_cc' => $request->displacement_cc,
+            'fuel' => $request->fuel,
+            'listing_condition' => $request->listing_condition,
+            'price_eur' => $request->price_eur,
+            'description' => $request->description,
+            'title' => $request->title ?? "{$request->brand} {$request->model} {$request->year}",
+        ]);
 
-        return redirect()->route('admin.motos')->with('success', 'Moto actualizada correctamente.');
+        return redirect()->route('admin.motos');
     }
 
     public function destroyMoto($id)
@@ -66,11 +73,12 @@ class AdminController extends Controller
         $moto = Listing::findOrFail($id);
 
         if ($moto->status === Listing::STATUS_SOLD) {
-            return back()->with('error', 'No puedes eliminar una moto vendida.');
+            abort(403);
         }
 
         $moto->delete();
-        return back()->with('success', 'Moto eliminada correctamente.');
+
+        return back();
     }
 
     public function approve($id)
@@ -78,28 +86,28 @@ class AdminController extends Controller
         $listing = Listing::findOrFail($id);
 
         if ($listing->status === Listing::STATUS_SOLD) {
-            return redirect()->back()->with('error', 'No puedes modificar una moto vendida.');
+            abort(403);
         }
 
         $listing->status = Listing::STATUS_APPROVED;
         $listing->published_at = now();
         $listing->save();
 
-        return redirect()->back()->with('success', 'Moto aprobada y publicada.');
+        return back();
     }
 
-    public function reject($id)
+    public function markSold($id)
     {
         $listing = Listing::findOrFail($id);
 
-        if ($listing->status === Listing::STATUS_SOLD) {
-            return redirect()->back()->with('error', 'No puedes modificar una moto vendida.');
+        if ($listing->status !== Listing::STATUS_SOLD_PENDING) {
+            abort(403);
         }
 
-        $listing->status = Listing::STATUS_REJECTED;
+        $listing->status = Listing::STATUS_SOLD;
         $listing->save();
 
-        return redirect()->back()->with('error', 'Moto rechazada.');
+        return back();
     }
 
     public function usuarios()
@@ -111,6 +119,6 @@ class AdminController extends Controller
     public function destroyUsuario($id)
     {
         User::where('id', $id)->where('is_admin', false)->delete();
-        return back()->with('success', 'Usuario eliminado correctamente.');
+        return back();
     }
 }

@@ -1,17 +1,19 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Listing;
 use App\Models\Lead;
-use App\Models\Order;
 
 class PageController extends Controller
 {
     public function home()
     {
-        $motos = Listing::where('status', Listing::STATUS_APPROVED)
+        $motos = Listing::whereIn('status', [
+                Listing::STATUS_APPROVED,
+                Listing::STATUS_SOLD_PENDING
+            ])
             ->latest('published_at')
             ->get();
 
@@ -20,7 +22,10 @@ class PageController extends Controller
 
     public function catalogo(Request $request)
     {
-        $query = Listing::where('status', Listing::STATUS_APPROVED);
+        $query = Listing::whereIn('status', [
+            Listing::STATUS_APPROVED,
+            Listing::STATUS_SOLD_PENDING
+        ]);
 
         if ($request->brand) {
             $query->where('brand', 'like', "%{$request->brand}%");
@@ -32,23 +37,27 @@ class PageController extends Controller
             $query->where('year', $request->year);
         }
         if ($request->km_max) {
-            $query->where('km', '<=', (int)$request->km_max);
+            $query->where('km', '<=', (int) $request->km_max);
         }
         if ($request->price_min) {
-            $query->where('price_eur', '>=', (int)$request->price_min);
+            $query->where('price_eur', '>=', (int) $request->price_min);
         }
         if ($request->price_max) {
-            $query->where('price_eur', '<=', (int)$request->price_max);
+            $query->where('price_eur', '<=', (int) $request->price_max);
         }
 
         $motos = $query->paginate(12);
+
         return view('catalogo', compact('motos'));
     }
 
     public function ficha($slug)
     {
         $moto = Listing::where('slug', $slug)
-            ->where('status', Listing::STATUS_APPROVED)
+            ->whereIn('status', [
+                Listing::STATUS_APPROVED,
+                Listing::STATUS_SOLD_PENDING
+            ])
             ->firstOrFail();
 
         return view('moto', compact('moto'));
@@ -70,16 +79,21 @@ class PageController extends Controller
             'message' => $request->message
         ]);
 
-        return back()->with('success', 'Tu mensaje ha sido enviado.');
+        return back();
     }
 
     public function addCarrito(Request $request, $id)
     {
         if (!auth()->check()) {
-            return redirect()->back()->with('error', 'Debes iniciar sesión para añadir una moto al carrito.');
+            abort(403);
         }
 
         $moto = Listing::findOrFail($id);
+
+        if ($moto->status !== Listing::STATUS_APPROVED) {
+            abort(403);
+        }
+
         $carrito = session()->get('carrito', []);
 
         if (isset($carrito[$id])) {
@@ -94,7 +108,8 @@ class PageController extends Controller
         }
 
         session(['carrito' => $carrito]);
-        return redirect()->route('carrito')->with('success', 'Moto añadida al carrito.');
+
+        return redirect()->route('carrito');
     }
 
     public function removeFromCart($id)
@@ -110,13 +125,14 @@ class PageController extends Controller
         }
 
         session()->put('carrito', $carrito);
-        return redirect()->route('carrito')->with('success', 'Producto eliminado del carrito');
+
+        return redirect()->route('carrito');
     }
 
     public function clearCart()
     {
         session()->forget('carrito');
-        return redirect()->route('carrito')->with('success', 'Carrito vaciado');
+        return redirect()->route('carrito');
     }
 
     public function carrito()

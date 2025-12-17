@@ -6,8 +6,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\StripeWebhookController;
-use App\Http\Middleware\VerifyCsrfToken;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/catalogo', [PageController::class, 'catalogo'])->name('catalogo');
@@ -26,9 +24,6 @@ Route::post('/create-checkout-session', [PaymentController::class, 'createChecko
 Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
-    ->withoutMiddleware([VerifyCsrfToken::class]);
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/listings/create', [ListingController::class, 'create'])->name('listings.create');
     Route::post('/listings', [ListingController::class, 'store'])->name('listings.store');
@@ -45,8 +40,10 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/admin/motos/{id}/edit', [AdminController::class, 'editMoto'])->name('admin.motos.edit');
     Route::put('/admin/motos/{id}', [AdminController::class, 'updateMoto'])->name('admin.motos.update');
     Route::delete('/admin/motos/{id}', [AdminController::class, 'destroyMoto'])->name('admin.motos.destroy');
+
     Route::post('/admin/listings/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
-    Route::post('/admin/listings/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
+    Route::post('/admin/listings/{id}/mark-sold', [AdminController::class, 'markSold'])->name('admin.motos.markSold');
+
     Route::get('/admin/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
     Route::delete('/admin/usuarios/{id}', [AdminController::class, 'destroyUsuario'])->name('admin.usuarios.destroy');
 });

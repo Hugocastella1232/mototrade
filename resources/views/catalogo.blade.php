@@ -16,7 +16,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @forelse($motos as $moto)
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition p-4">
+            <div class="bg-white rounded-lg shadow hover:shadow-lg transition p-4 relative">
                 @if($moto->image)
                     <img src="{{ asset('storage/' . $moto->image) }}"
                          alt="{{ $moto->title }}"
@@ -24,6 +24,13 @@
                 @else
                     <div class="h-40 bg-gray-300 flex items-center justify-center rounded">
                         <span class="text-gray-600">Sin imagen</span>
+                    </div>
+                @endif
+
+                @if($moto->status === 'sold_pending')
+                    <div class="absolute inset-0 bg-red-600 bg-opacity-50 rounded-lg"></div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-15deg] bg-white px-8 py-2 text-xl font-bold text-black">
+                        VENDIDA
                     </div>
                 @endif
 

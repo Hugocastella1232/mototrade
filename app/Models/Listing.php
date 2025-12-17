@@ -9,10 +9,9 @@ class Listing extends Model
 {
     use HasFactory;
 
-    const STATUS_PENDING  = 'pendiente';
-    const STATUS_APPROVED = 'aprobada';
-    const STATUS_REJECTED = 'rechazada';
-    const STATUS_SOLD     = 'vendida';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_SOLD_PENDING = 'sold_pending';
+    const STATUS_SOLD = 'sold';
 
     const UPDATED_AT = null;
 
