@@ -76,9 +76,9 @@ class PaymentController extends Controller
         Order::create([
             'user_id' => $session->metadata->user_id,
             'listing_id' => $listing->id,
-            'amount_eur' => $listing->price_eur,
-            'stripe_payment_intent' => $session->payment_intent,
+            'total_eur' => $listing->price_eur,
             'status' => 'paid',
+            'stripe_payment_intent' => $session->payment_intent,
         ]);
 
         $listing->status = Listing::STATUS_SOLD_PENDING;
