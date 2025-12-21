@@ -78,6 +78,7 @@ class PaymentController extends Controller
             'listing_id' => $listing->id,
             'amount_eur' => $listing->price_eur,
             'stripe_payment_intent' => $session->payment_intent,
+            'status' => 'paid',
         ]);
 
         $listing->status = Listing::STATUS_SOLD_PENDING;
