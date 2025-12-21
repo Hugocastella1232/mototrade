@@ -30,6 +30,10 @@ class PaymentController extends Controller
 
         $session = Session::create([
             'mode' => 'payment',
+            'metadata' => [
+                'listing_id' => $listing->id,
+                'user_id' => auth()->id(),
+            ],
             'payment_intent_data' => [
                 'metadata' => [
                     'listing_id' => $listing->id,
