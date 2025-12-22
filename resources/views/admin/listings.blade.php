@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+
+<div style="background:red;color:white;padding:20px;margin-bottom:20px;font-weight:bold">
+    SI VES ESTO, ESTE ES EL ARCHIVO CORRECTO
+</div>
+
 <div class="max-w-6xl mx-auto py-8 px-6">
     <h1 class="text-2xl font-bold mb-6">Gestión de motos</h1>
 
