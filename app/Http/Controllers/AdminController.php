@@ -15,18 +15,13 @@ class AdminController extends Controller
 
     public function motos()
     {
-        $motos = Listing::orderByDesc('created_at')->paginate(10);
+        $motos = Listing::orderByDesc('id')->paginate(10);
         return view('admin.listings', compact('motos'));
     }
 
     public function editMoto($id)
     {
         $moto = Listing::findOrFail($id);
-
-        if ($moto->status === Listing::STATUS_SOLD) {
-            abort(403);
-        }
-
         return view('admin.edit_moto', compact('moto'));
     }
 
@@ -38,34 +33,20 @@ class AdminController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'brand' => 'required|string|max:100',
-            'model' => 'required|string|max:100',
-            'year' => 'required|integer|min:1900|max:' . date('Y'),
-            'km' => 'nullable|integer|min:0',
-            'power_hp' => 'nullable|integer|min:0',
-            'displacement_cc' => 'nullable|integer|min:0',
-            'fuel' => 'nullable|string|max:50',
-            'listing_condition' => 'nullable|string|max:50',
-            'price_eur' => 'required|integer|min:0',
-            'description' => 'nullable|string|max:2000',
-        ]);
+        $moto->update($request->only([
+            'brand',
+            'model',
+            'year',
+            'km',
+            'power_hp',
+            'displacement_cc',
+            'fuel',
+            'listing_condition',
+            'price_eur',
+            'description'
+        ]));
 
-        $moto->update([
-            'brand' => $request->brand,
-            'model' => $request->model,
-            'year' => $request->year,
-            'km' => $request->km,
-            'power_hp' => $request->power_hp,
-            'displacement_cc' => $request->displacement_cc,
-            'fuel' => $request->fuel,
-            'listing_condition' => $request->listing_condition,
-            'price_eur' => $request->price_eur,
-            'description' => $request->description,
-            'title' => $request->title ?? "{$request->brand} {$request->model} {$request->year}",
-        ]);
-
-        return redirect()->route('admin.motos');
+        return back();
     }
 
     public function destroyMoto($id)
@@ -77,34 +58,30 @@ class AdminController extends Controller
         }
 
         $moto->delete();
-
         return back();
     }
 
-    public function approve($id)
+    public function updateStatus(Request $request, $id)
     {
         $listing = Listing::findOrFail($id);
+        $from = $listing->status;
+        $to = $request->status;
 
-        if ($listing->status === Listing::STATUS_SOLD) {
+        $allowed = [
+            'pending' => ['approved'],
+            'sold_pending' => ['sold'],
+        ];
+
+        if (!isset($allowed[$from]) || !in_array($to, $allowed[$from])) {
             abort(403);
         }
 
-        $listing->status = Listing::STATUS_APPROVED;
-        $listing->published_at = now();
-        $listing->save();
+        $listing->status = $to;
 
-        return back();
-    }
-
-    public function markSold($id)
-    {
-        $listing = Listing::findOrFail($id);
-
-        if ($listing->status !== Listing::STATUS_SOLD_PENDING) {
-            abort(403);
+        if ($to === Listing::STATUS_APPROVED && !$listing->published_at) {
+            $listing->published_at = now();
         }
 
-        $listing->status = Listing::STATUS_SOLD;
         $listing->save();
 
         return back();
