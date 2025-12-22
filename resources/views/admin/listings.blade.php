@@ -24,7 +24,11 @@
                     <td class="p-3">{{ number_format($moto->price_eur, 0, ',', '.') }}</td>
 
                     <td class="p-3">
-                        @if($moto->status === \App\Models\Listing::STATUS_APPROVED)
+                        @if($moto->status === \App\Models\Listing::STATUS_PENDING)
+                            <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                Pending
+                            </span>
+                        @elseif($moto->status === \App\Models\Listing::STATUS_APPROVED)
                             <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
                                 Approved
                             </span>
@@ -40,6 +44,15 @@
                     </td>
 
                     <td class="p-3 flex gap-3">
+                        @if($moto->status === \App\Models\Listing::STATUS_PENDING)
+                            <form action="{{ route('admin.motos.approve', $moto->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-green-700 font-semibold hover:underline">
+                                    Aprobar
+                                </button>
+                            </form>
+                        @endif
+
                         @if($moto->status === \App\Models\Listing::STATUS_SOLD_PENDING)
                             <form action="{{ route('admin.motos.markSold', $moto->id) }}" method="POST">
                                 @csrf

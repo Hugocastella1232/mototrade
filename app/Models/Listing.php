@@ -9,15 +9,13 @@ class Listing extends Model
 {
     use HasFactory;
 
+    const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
     const STATUS_SOLD_PENDING = 'sold_pending';
     const STATUS_SOLD = 'sold';
 
-    const UPDATED_AT = null;
-
     protected $casts = [
         'published_at' => 'datetime',
-        'status' => 'string'
     ];
 
     protected $fillable = [
@@ -42,6 +40,6 @@ class Listing extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 }

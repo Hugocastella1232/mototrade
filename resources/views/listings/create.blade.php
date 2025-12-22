@@ -44,7 +44,6 @@
     <div>
         <label for="fuel" class="block">Combustible</label>
         <select name="fuel" id="fuel" class="border p-2 w-full" required>
-            <option value="">Selecciona combustible</option>
             <option value="gasolina">Gasolina</option>
             <option value="diesel">Diésel</option>
             <option value="electrica">Eléctrica</option>
