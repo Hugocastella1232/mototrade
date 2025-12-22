@@ -2,10 +2,6 @@
 
 @section('content')
 
-<div style="background:red;color:white;padding:20px;margin-bottom:20px;font-weight:bold">
-    SI VES ESTO, ESTE ES EL ARCHIVO CORRECTO
-</div>
-
 <div class="max-w-6xl mx-auto py-8 px-6">
     <h1 class="text-2xl font-bold mb-6">Gestión de motos</h1>
 
@@ -41,14 +37,14 @@
                                 <select name="status"
                                         onchange="this.form.submit()"
                                         class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold">
-                                    <option value="pending" selected>Pending</option>
-                                    <option value="approved">Approved</option>
+                                    <option value="pending" selected>Pendiente</option>
+                                    <option value="approved">Aprobada</option>
                                 </select>
                             </form>
 
                         @elseif($moto->status === \App\Models\Listing::STATUS_APPROVED)
                             <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-                                Approved
+                                Aprobada
                             </span>
 
                         @elseif($moto->status === \App\Models\Listing::STATUS_SOLD_PENDING)
@@ -57,14 +53,14 @@
                                 <select name="status"
                                         onchange="this.form.submit()"
                                         class="bg-blue-100 text-blue-800 border border-blue-300 rounded px-2 py-1 text-sm font-semibold">
-                                    <option value="sold_pending" selected>Sold pending</option>
-                                    <option value="sold">Sold</option>
+                                    <option value="sold_pending" selected>Venta pendiente</option>
+                                    <option value="sold">Vendida</option>
                                 </select>
                             </form>
 
                         @elseif($moto->status === \App\Models\Listing::STATUS_SOLD)
                             <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
-                                Sold
+                                Vendida
                             </span>
                         @endif
                     </td>
