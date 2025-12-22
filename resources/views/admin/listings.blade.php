@@ -5,7 +5,9 @@
     <h1 class="text-2xl font-bold mb-6">Gestión de motos</h1>
 
     @if(session('success'))
-        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
     @endif
 
     <table class="w-full bg-white shadow rounded-lg">
@@ -28,32 +30,55 @@
                     <td class="p-3">{{ number_format($moto->price_eur, 0, ',', '.') }}</td>
 
                     <td class="p-3">
-                        <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST">
-                            @csrf
-                            <select name="status" onchange="this.form.submit()" class="border rounded px-2 py-1">
-                                @if($moto->status === 'pending')
+                        @if($moto->status === \App\Models\Listing::STATUS_PENDING)
+                            <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST">
+                                @csrf
+                                <select name="status"
+                                        onchange="this.form.submit()"
+                                        class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold">
                                     <option value="pending" selected>Pending</option>
                                     <option value="approved">Approved</option>
-                                @elseif($moto->status === 'approved')
-                                    <option value="approved" selected>Approved</option>
-                                @elseif($moto->status === 'sold_pending')
+                                </select>
+                            </form>
+
+                        @elseif($moto->status === \App\Models\Listing::STATUS_APPROVED)
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                Approved
+                            </span>
+
+                        @elseif($moto->status === \App\Models\Listing::STATUS_SOLD_PENDING)
+                            <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST">
+                                @csrf
+                                <select name="status"
+                                        onchange="this.form.submit()"
+                                        class="bg-blue-100 text-blue-800 border border-blue-300 rounded px-2 py-1 text-sm font-semibold">
                                     <option value="sold_pending" selected>Sold pending</option>
                                     <option value="sold">Sold</option>
-                                @elseif($moto->status === 'sold')
-                                    <option value="sold" selected>Sold</option>
-                                @endif
-                            </select>
-                        </form>
+                                </select>
+                            </form>
+
+                        @elseif($moto->status === \App\Models\Listing::STATUS_SOLD)
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                Sold
+                            </span>
+                        @endif
                     </td>
 
                     <td class="p-3 flex gap-3">
-                        @if($moto->status !== 'sold')
-                            <a href="{{ route('admin.motos.edit', $moto->id) }}" class="text-blue-600 hover:underline">Editar</a>
+                        @if($moto->status !== \App\Models\Listing::STATUS_SOLD)
+                            <a href="{{ route('admin.motos.edit', $moto->id) }}"
+                               class="text-blue-600 hover:underline">
+                                Editar
+                            </a>
 
                             <form action="{{ route('admin.motos.destroy', $moto->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
+                                <button type="submit"
+                                        onclick="return confirm('¿Eliminar esta moto?')"
+                                        class="text-red-600 hover:underline">
+                                    Eliminar
+                                </button>
                             </form>
                         @endif
                     </td>
