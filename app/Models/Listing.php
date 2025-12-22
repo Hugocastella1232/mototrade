@@ -14,8 +14,6 @@ class Listing extends Model
     const STATUS_SOLD_PENDING = 'sold_pending';
     const STATUS_SOLD = 'sold';
 
-    public $timestamps = false;
-
     protected $casts = [
         'published_at' => 'datetime',
     ];
