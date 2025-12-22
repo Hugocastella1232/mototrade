@@ -56,11 +56,11 @@ class ListingController extends Controller
             'fuel' => $request->fuel,
             'listing_condition' => $request->listing_condition,
             'price_eur' => $request->price_eur,
-            'status' => Listing::STATUS_APPROVED,
+            'status' => Listing::STATUS_PENDING,
             'location' => $request->location,
             'description' => $request->description,
             'image' => $path,
-            'published_at' => now(),
+            'published_at' => null,
         ]);
 
         return redirect()->route('catalogo');
