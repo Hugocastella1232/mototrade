@@ -63,7 +63,6 @@ class ListingController extends Controller
             'published_at' => null,
         ]);
 
-        return redirect('/')
-            ->with('success', 'La moto se ha enviado y está pendiente de aprobación por el administrador.');
+        return redirect()->route('home')->with('success', 'Moto publicada con éxito. Está pendiente de revisión por un administrador.');
     }
 }
