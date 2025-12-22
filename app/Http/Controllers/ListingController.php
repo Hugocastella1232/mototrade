@@ -56,13 +56,14 @@ class ListingController extends Controller
             'fuel' => $request->fuel,
             'listing_condition' => $request->listing_condition,
             'price_eur' => $request->price_eur,
-            'status' => 'pending',
+            'status' => Listing::STATUS_PENDING,
             'location' => $request->location,
             'description' => $request->description,
             'image' => $path,
             'published_at' => null,
         ]);
 
-        return redirect()->route('catalogo');
+        return redirect('/')
+            ->with('success', 'La moto se ha enviado y está pendiente de aprobación por el administrador.');
     }
 }
