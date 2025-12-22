@@ -56,7 +56,7 @@ class ListingController extends Controller
             'fuel' => $request->fuel,
             'listing_condition' => $request->listing_condition,
             'price_eur' => $request->price_eur,
-            'status' => Listing::STATUS_PENDING,
+            'status' => 'pending',
             'location' => $request->location,
             'description' => $request->description,
             'image' => $path,
