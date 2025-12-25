@@ -37,8 +37,9 @@
                                 <select name="status"
                                         onchange="this.form.submit()"
                                         class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold">
-                                    <option value="pending" selected>Pendiente</option>
-                                    <option value="approved">Aprobada</option>
+                                    <option value="{{ \App\Models\Listing::STATUS_APPROVED }}">
+                                        Aprobada
+                                    </option>
                                 </select>
                             </form>
 
@@ -53,8 +54,9 @@
                                 <select name="status"
                                         onchange="this.form.submit()"
                                         class="bg-blue-100 text-blue-800 border border-blue-300 rounded px-2 py-1 text-sm font-semibold">
-                                    <option value="sold_pending" selected>Venta pendiente</option>
-                                    <option value="sold">Vendida</option>
+                                    <option value="{{ \App\Models\Listing::STATUS_SOLD }}">
+                                        Vendida
+                                    </option>
                                 </select>
                             </form>
 
