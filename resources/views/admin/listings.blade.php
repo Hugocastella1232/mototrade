@@ -31,17 +31,23 @@
                     <td class="p-3">{{ number_format($moto->price_eur, 0, ',', '.') }}</td>
 
                     <td class="p-3">
+
                         @if($moto->status === \App\Models\Listing::STATUS_PENDING)
-                            <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST">
-                                @csrf
-                                <select name="status"
-                                        onchange="this.form.submit()"
-                                        class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold">
-                                    <option value="{{ \App\Models\Listing::STATUS_APPROVED }}">
-                                        Aprobada
-                                    </option>
-                                </select>
-                            </form>
+                            <details class="inline-block">
+                                <summary class="cursor-pointer bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Pendiente
+                                </summary>
+
+                                <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST" class="mt-2">
+                                    @csrf
+                                    <button type="submit"
+                                            name="status"
+                                            value="{{ \App\Models\Listing::STATUS_APPROVED }}"
+                                            class="text-sm text-green-700 hover:underline">
+                                        Aprobar
+                                    </button>
+                                </form>
+                            </details>
 
                         @elseif($moto->status === \App\Models\Listing::STATUS_APPROVED)
                             <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
@@ -49,22 +55,28 @@
                             </span>
 
                         @elseif($moto->status === \App\Models\Listing::STATUS_SOLD_PENDING)
-                            <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST">
-                                @csrf
-                                <select name="status"
-                                        onchange="this.form.submit()"
-                                        class="bg-blue-100 text-blue-800 border border-blue-300 rounded px-2 py-1 text-sm font-semibold">
-                                    <option value="{{ \App\Models\Listing::STATUS_SOLD }}">
-                                        Vendida
-                                    </option>
-                                </select>
-                            </form>
+                            <details class="inline-block">
+                                <summary class="cursor-pointer bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Venta pendiente
+                                </summary>
+
+                                <form action="{{ route('admin.listings.updateStatus', $moto->id) }}" method="POST" class="mt-2">
+                                    @csrf
+                                    <button type="submit"
+                                            name="status"
+                                            value="{{ \App\Models\Listing::STATUS_SOLD }}"
+                                            class="text-sm text-red-700 hover:underline">
+                                        Marcar como vendida
+                                    </button>
+                                </form>
+                            </details>
 
                         @elseif($moto->status === \App\Models\Listing::STATUS_SOLD)
                             <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
                                 Vendida
                             </span>
                         @endif
+
                     </td>
 
                     <td class="p-3 flex gap-3">
